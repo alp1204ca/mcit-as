@@ -1,5 +1,9 @@
 MCIT - Admission System - First Version
 
+** FIRST LOAD**
+modify application.properties adding the database ip, username and password.
+uncomment the lines on resource/data.sql to load the admin user and roles, run the project and comment back those lines.
+
 Done (2018-02-11):
   - Spring boot
   - Spring Security
@@ -22,6 +26,7 @@ Todos:
   - Comment code
   - Add test cases
   - Add reports to admin
+  - Add liquibase to the project
 
 
 -
