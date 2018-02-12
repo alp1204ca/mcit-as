@@ -21,12 +21,9 @@ Todos:
   - Add remember me
   - Add forgot password
   - Allow students to chose courses
-  - Allow professores to evaluate studants (add marks)
+  - Allow professors to evaluate students (add marks)
   - Show marks on students page
   - Comment code
   - Add test cases
   - Add reports to admin
   - Add liquibase to the project
-
-
--
