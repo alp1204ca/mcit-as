@@ -2,6 +2,7 @@ package com.mcit.AdmissionSystem.model;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
@@ -17,12 +18,16 @@ public class Student implements Serializable {
     private Long id;
 
     @Column(name="first_name")
+    @NotNull
     private String firstName;
 
     @Column(name="last_name")
+    @NotNull
     private String lastName;
 
     @OneToOne( fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(unique = true)
+    @NotNull
     private User user;
 
     public Long getId() {

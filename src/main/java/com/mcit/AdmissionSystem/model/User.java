@@ -3,6 +3,7 @@ package com.mcit.AdmissionSystem.model;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
@@ -25,15 +26,19 @@ public final class User implements Serializable {
             name = "as_user_role",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "role_code", referencedColumnName = "code")})
+    @NotNull
     private Set<Role> roles;
 
     @Column(name = "user_name",unique = true)
+    @NotNull
     private String userName;
 
     @Column(name="email")
+    @NotNull
     private String email;
 
     @Column(name = "password")
+    @NotNull
     private String password;
 
     public User() {}

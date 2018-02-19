@@ -13,12 +13,16 @@
                 var id = button.data('student-id');
                 var firstName = button.data('student-first-name');
                 var lastName = button.data('student-last-name');
+                var userName = button.data('student-username');
+                var email = button.data('student-email');
                 var title = button.data('modal-type');
                 var action = button.data('form-action');
 
                 $('#student-id').val(id);
                 $('#student-first-name').val(firstName);
                 $('#student-last-name').val(lastName);
+                $('#student-username').val(userName);
+                $('#student-email').val(email);
                 $('#span-title').text(title);
                 $('#form-student').attr('action',action);
             });
@@ -62,28 +66,36 @@
             data-student-id="0"
             data-student-first-name=""
             data-student-last-name=""
+            data-student-username=""
+            data-student-email=""
             data-modal-type="New"
             th:attr="data-form-action=@{/student/new}"
             data-target="#student-modal" >New Student</button>
 
-    <div th:if="${students}" class="col-md-11">
+    <div th:if="${students}" class="col-md-12">
         <table class="table table-striped">
             <thead>
             <th scope="col">ID</th>
             <th scope="col">First Name</th>
             <th scope="col">Last Name</th>
+            <th scope="col">Username</th>
+            <th scope="col">E-Mail</th>
             <th scope="col">Actions</th>
             </thead>
             <tbody>
             <tr scope="row" th:each="student : ${students}">
                 <td class="col-md-1" th:text="${student.id}"></td>
-                <td class="col-md-4" th:text="${student.firstName}"></td>
-                <td class="col-md-4" th:text="${student.lastName}"></td>
+                <td class="col-md-2" th:text="${student.firstName}"></td>
+                <td class="col-md-2" th:text="${student.lastName}"></td>
+                <td class="col-md-2" th:text="${student.user.userName}"></td>
+                <td class="col-md-3" th:text="${student.user.email}"></td>
                 <td class="col-md-2">
                     <button type="button" class="btn btn-primary" data-toggle="modal"
                             th:attr="data-student-id=${student.id},
                                 data-student-first-name=${student.firstName},
                                 data-student-last-name=${student.lastName},
+                                data-student-username=${student.user.userName},
+                                data-student-email=${student.user.email},
                                 data-form-action=@{/student/edit}"
                             data-modal-type="Edit"
                             data-target="#student-modal">Edit</button>

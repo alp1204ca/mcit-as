@@ -22,14 +22,19 @@ public class StudentService {
         return studentRepository.findOne(id);
     }
 
+    public Student findOneWithUserAndRoles(Long id) {
+
+        return studentRepository.findOneWithUserAndRoles(id);
+    }
+
     public List<Student> findAll() {
 
         return studentRepository.findAll();
     }
 
-    public void deleteById(Long id) {
+    public void delete(Student student) {
 
-        studentRepository.delete(id);
+        studentRepository.delete(student);
     }
 
     public Student update(Student student) {

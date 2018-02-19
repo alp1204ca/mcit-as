@@ -71,44 +71,40 @@ public class ProfessorController {
 
         ModelAndView modelAndView = new ModelAndView("professor");
 
-        if (professor != null && professor.getFirstName() != null && professor.getLastName() != null &&
-                professor.getUser() != null && professor.getUser().getUserName() != null && professor.getUser().getEmail() != null) {
+        try {
 
-            try {
+            User user = userService.findByUserName(professor.getUser().getUserName());
+            if (user != null) {
+                log.error("Could not add professor " + professor.getFirstName() + " "
+                        + professor.getLastName() + ". Username already in use: "
+                        + professor.getUser().getUserName());
+                modelAndView.addObject("error", "Error adding professor - Username already in use");
+            } else {
+                String password = RandomStringUtils.random(10, true, true);
+                String passwordEncrypted = passwordEncoder.encode(password);
+                Role adminRole = roleService.findByCode("ROLE_PROFESSOR");
+                Set<Role> roles = new HashSet<>();
+                roles.add(adminRole);
+                user = new User(professor.getUser().getUserName(), passwordEncrypted, professor.getUser().getEmail(), roles);
+                professor.setUser(user);
+                professorService.add(professor);
 
-                User user = userService.findByUserName(professor.getUser().getUserName());
-                if (user != null) {
-                    log.error("Could not add professor " + professor.getFirstName() + " "
-                            + professor.getLastName() + ". Username already in use: "
-                            + professor.getUser().getUserName());
-                    modelAndView.addObject("error", "Error adding professor - Username already in use");
-                } else {
-                    String password = RandomStringUtils.random(10, true, true);
-                    String passwordEncrypted = passwordEncoder.encode(password);
-                    Role adminRole = roleService.findByCode("ROLE_PROFESSOR");
-                    Set<Role> roles = new HashSet<>();
-                    roles.add(adminRole);
-                    user = new User(professor.getUser().getUserName(), passwordEncrypted, professor.getUser().getEmail(), roles);
-                    professor.setUser(user);
-                    professorService.add(professor);
+                Map<String, Object> params = new HashMap<>();
+                params.put("name", professor.getFirstName() + " " + professor.getLastName());
+                params.put("username", professor.getUser().getUserName());
+                params.put("password", password);
+                params.put("url", url);
+                params.put("type", "professor");
 
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("name", professor.getFirstName() + " " + professor.getLastName());
-                    params.put("username", professor.getUser().getUserName());
-                    params.put("password", password);
-                    params.put("url", url);
+                mailService.send(mailFrom, user.getEmail(), "Welcome to MCIT professor", "new_account.html", params);
 
-                    mailService.send(mailFrom, user.getEmail(), "Welcome to MCIT professor", "new_account_professor.html", params);
+                modelAndView.addObject("message", "Professor successfully added");
+            }
+        } catch (Exception e) {
+            log.error("Could not add professor " + professor.getFirstName() + " " + professor.getLastName(), e);
+            modelAndView.addObject("error", "Error adding professor");
+       }
 
-                    modelAndView.addObject("message", "Professor successfully added");
-                }
-            } catch (Exception e) {
-                log.error("Could not add professor " + professor.getFirstName() + " " + professor.getLastName(), e);
-                modelAndView.addObject("error", "Error adding professor");
-           }
-
-        } else
-            modelAndView.addObject("error", "Invalid professor data");
 
         return professor(modelAndView);
     }
@@ -119,22 +115,19 @@ public class ProfessorController {
 
         ModelAndView modelAndView = new ModelAndView("professor");
 
-        if (professor != null && professor.getFirstName() != null && professor.getLastName() != null) {
+        Professor professor_ = professorService.findById(professor.getId());
 
-            Professor professor_ = professorService.findById(professor.getId());
-
-            if (professor_ != null) {
-                try {
-                    professorService.update(professor);
-                    modelAndView.addObject("message", "Professor successfully updated");
-                } catch (Exception e) {
-                    log.error("Could not update professor " +  professor.getFirstName() + " " + professor.getLastName(), e);
-                    modelAndView.addObject("error", "Error updating professor");
-                }
-            } else
-                modelAndView.addObject("error", "Professor does not exist");
+        if (professor_ != null) {
+            try {
+                professorService.update(professor);
+                modelAndView.addObject("message", "Professor successfully updated");
+            } catch (Exception e) {
+                log.error("Could not update professor " +  professor.getFirstName() + " " + professor.getLastName(), e);
+                modelAndView.addObject("error", "Error updating professor");
+            }
         } else
-            modelAndView.addObject("error", "Invalid professor data");
+            modelAndView.addObject("error", "Professor does not exist");
+
 
         return professor(modelAndView);
     }
@@ -145,22 +138,19 @@ public class ProfessorController {
 
         ModelAndView modelAndView = new ModelAndView("professor");
 
-        if (professor != null && professor.getId() != null) {
+        Professor professor_ = professorService.findOneWithUserAndRoles(professor.getId());
 
-            Professor professor_ = professorService.findOneWithUserAndRoles(professor.getId());
-
-            if (professor_ != null) {
-                try {
-                    professorService.delete(professor_);
-                    modelAndView.addObject("message", "Professor successfully deleted");
-                } catch (Exception e) {
-                    log.error("Could not delete professor " +  professor.getFirstName() + " " + professor.getLastName(), e);
-                    modelAndView.addObject("error", "Error deleting professor");
-                }
-            } else
-                modelAndView.addObject("error", "Professor does not exist");
+        if (professor_ != null) {
+            try {
+                professorService.delete(professor_);
+                modelAndView.addObject("message", "Professor successfully deleted");
+            } catch (Exception e) {
+                log.error("Could not delete professor " +  professor.getFirstName() + " " + professor.getLastName(), e);
+                modelAndView.addObject("error", "Error deleting professor");
+            }
         } else
-            modelAndView.addObject("error", "Invalid professor");
+            modelAndView.addObject("error", "Professor does not exist");
+
 
         return professor(modelAndView);
     }
