@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public class AsUserDetails implements UserDetails {
 
@@ -66,7 +67,7 @@ public class AsUserDetails implements UserDetails {
     }
 
 
-    public List<Role> getRoles() {
+    public Set<Role> getRoles() {
         return user.getRoles();
     }
 

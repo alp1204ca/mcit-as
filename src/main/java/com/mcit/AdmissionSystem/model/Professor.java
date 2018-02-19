@@ -21,6 +21,10 @@ public class Professor implements Serializable {
     @Column(name="last_name")
     private String lastName;
 
+    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @JoinColumn(unique = true)
+    private User user;
+
     public Long getId() {
         return id;
     }
@@ -43,5 +47,17 @@ public class Professor implements Serializable {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -22,6 +22,9 @@ public class Student implements Serializable {
     @Column(name="last_name")
     private String lastName;
 
+    @OneToOne( fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private User user;
+
     public Long getId() {
         return id;
     }
@@ -44,5 +47,13 @@ public class Student implements Serializable {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

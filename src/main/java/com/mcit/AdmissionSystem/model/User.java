@@ -1,8 +1,13 @@
 package com.mcit.AdmissionSystem.model;
 
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
+
+import static org.hibernate.annotations.CascadeType.DELETE_ORPHAN;
 
 @Entity
 @Table(name = "as_user" )
@@ -20,20 +25,24 @@ public final class User implements Serializable {
             name = "as_user_role",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "role_code", referencedColumnName = "code")})
-    private List<Role> roles;
+    private Set<Role> roles;
 
     @Column(name = "user_name",unique = true)
     private String userName;
+
+    @Column(name="email")
+    private String email;
 
     @Column(name = "password")
     private String password;
 
     public User() {}
 
-    public User(String userName, String password, List<Role> roles) {
+    public User(String userName, String password, String email, Set<Role> roles) {
         this.roles = roles;
         this.password = password;
         this.userName = userName;
+        this.email = email;
     }
 
     public boolean hasRole(String role) {
@@ -45,11 +54,11 @@ public final class User implements Serializable {
     	return false;
     }
 
-    public List<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 
@@ -67,5 +76,21 @@ public final class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

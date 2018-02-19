@@ -39,7 +39,7 @@ public class ASAuthenticationProvider implements AuthenticationProvider {
         }
 
         AsUserDetails asUserDetails = new AsUserDetails(
-                new User(authentication.getPrincipal().toString(),password, user.getRoles()), password);
+                new User(authentication.getPrincipal().toString(),password, user.getEmail(),user.getRoles()), password);
         return asUserDetails.authentication();
 
     }

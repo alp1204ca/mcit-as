@@ -1,7 +1,9 @@
 package com.mcit.AdmissionSystem.service;
 
 import com.mcit.AdmissionSystem.model.Professor;
+import com.mcit.AdmissionSystem.model.User;
 import com.mcit.AdmissionSystem.repository.ProfessorRepository;
+import com.mcit.AdmissionSystem.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +24,21 @@ public class ProfessorService {
         return professorRepository.findOne(id);
     }
 
+    public Professor findOneWithUserAndRoles(Long id) {
+
+        return professorRepository.findOneWithUserAndRoles(id);
+    }
+
+
+
     public List<Professor> findAll() {
 
         return professorRepository.findAll();
     }
 
-    public void deleteById(Long id) {
+    public void delete(Professor professor) {
 
-        professorRepository.delete(id);
+        professorRepository.delete(professor);
     }
 
     public Professor update(Professor professor) {
