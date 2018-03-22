@@ -22,6 +22,13 @@ public class StudentService {
         return studentRepository.findOne(id);
     }
 
+    public Student findByUserName(String userName) {
+
+        return studentRepository.findByUserName(userName);
+    }
+
+
+
     public Student findOneWithUserAndRoles(Long id) {
 
         return studentRepository.findOneWithUserAndRoles(id);

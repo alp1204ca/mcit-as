@@ -32,6 +32,11 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
+    public List<Course> findAllByProfessor(String userName) {
+
+        return courseRepository.findAllByProfessorUserName(userName);
+    }
+
     public void deleteById(Long id) {
 
         courseRepository.delete(id);
@@ -39,11 +44,11 @@ public class CourseService {
 
     public Course update(Course course) {
 
-        return courseRepository.save(course);
+        return courseRepository.saveAndFlush(course);
     }
 
     public Course add(Course course) {
 
-        return courseRepository.save(course);
+        return courseRepository.saveAndFlush(course);
     }
 }

@@ -1,7 +1,9 @@
 package com.mcit.AdmissionSystem.controller;
 
 import com.mcit.AdmissionSystem.model.Course;
+import com.mcit.AdmissionSystem.model.Professor;
 import com.mcit.AdmissionSystem.service.CourseService;
+import com.mcit.AdmissionSystem.service.ProfessorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +16,13 @@ import java.util.List;
 @Controller
 public class CourseController {
 
-    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
+    private static final Logger log = LoggerFactory.getLogger(CourseController.class);
 
     @Autowired
     private CourseService courseService;
+
+    @Autowired
+    private ProfessorService professorService;
 
     @GetMapping("/course")
     @ResponseBody
@@ -30,7 +35,9 @@ public class CourseController {
         try {
 
             List<Course> courseList = courseService.findAll();
+            List<Professor> professorList = professorService.findAll();
             modelAndView.addObject("courses", courseList);
+            modelAndView.addObject("professors", professorList);
         } catch (Exception e) {
             log.error("Error retrieving courses",e);
             modelAndView.addObject("error", "Error retrieving courses");
@@ -78,7 +85,9 @@ public class CourseController {
             if (course_ != null) {
                 try {
                     course_ = courseService.findByName(course.getName());
-                    if (course_ == null) {
+                    if (course_ == null || course.getId() == course_.getId()) {
+                        Professor professor = professorService.findById(course.getProfessor().getId());
+                        course.setProfessor(professor);
                         courseService.update(course);
                         modelAndView.addObject("message", "Course successfully updated");
                     } else {

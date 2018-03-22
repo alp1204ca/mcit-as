@@ -19,3 +19,20 @@ footer{
 .container, .table {
     margin-top: 30px;
 }
+
+.table-left {
+    float: left;
+}
+
+.table-right {
+    float: right;
+}
+
+#course-table {
+    width: 400px;
+    cursor: pointer;
+}
+
+#student-table {
+    margin-bottom: 100px;
+}

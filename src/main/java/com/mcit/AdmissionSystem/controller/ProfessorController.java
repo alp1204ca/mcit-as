@@ -1,12 +1,7 @@
 package com.mcit.AdmissionSystem.controller;
 
-import com.mcit.AdmissionSystem.model.Professor;
-import com.mcit.AdmissionSystem.model.Role;
-import com.mcit.AdmissionSystem.model.User;
-import com.mcit.AdmissionSystem.service.MailService;
-import com.mcit.AdmissionSystem.service.ProfessorService;
-import com.mcit.AdmissionSystem.service.RoleService;
-import com.mcit.AdmissionSystem.service.UserService;
+import com.mcit.AdmissionSystem.model.*;
+import com.mcit.AdmissionSystem.service.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,12 +12,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.security.Principal;
 import java.util.*;
 
 @Controller
 public class ProfessorController {
 
-    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
+    private static final Logger log = LoggerFactory.getLogger(ProfessorController.class);
 
     @Autowired
     private ProfessorService professorService;
@@ -39,6 +35,9 @@ public class ProfessorController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    CourseService courseService;
+
     @Value("${mail.from}")
     private String mailFrom;
 
@@ -50,8 +49,7 @@ public class ProfessorController {
     public ModelAndView professor( ModelAndView modelAndView ) {
         log.info("/professor called");
 
-        if (modelAndView==null)
-            modelAndView = new ModelAndView("professor");
+        modelAndView = new ModelAndView("professor");
 
         try {
 
@@ -60,6 +58,25 @@ public class ProfessorController {
         } catch (Exception e) {
             log.error("Error retrieving professors",e);
             modelAndView.addObject("error", "Error retrieving professors");
+        }
+
+        return modelAndView;
+    }
+
+    @GetMapping("/professor/dashboard")
+    @ResponseBody
+    public ModelAndView professorDashBoard( ModelAndView modelAndView, Principal principal ) {
+        log.info("/professor/dashboard called");
+
+        modelAndView = new ModelAndView("professor-dashboard");
+
+        try {
+
+            List<Course> courses = courseService.findAllByProfessor(principal.getName());
+            modelAndView.addObject("courses", courses);
+        } catch (Exception e) {
+            log.error("Error retrieving professor's courses",e);
+            modelAndView.addObject("error", "Error retrieving professor's courses");
         }
 
         return modelAndView;
@@ -119,6 +136,7 @@ public class ProfessorController {
 
         if (professor_ != null) {
             try {
+                professor.setUser(userService.findByUserName(professor.getUser().getUserName()));
                 professorService.update(professor);
                 modelAndView.addObject("message", "Professor successfully updated");
             } catch (Exception e) {
@@ -141,15 +159,61 @@ public class ProfessorController {
         Professor professor_ = professorService.findOneWithUserAndRoles(professor.getId());
 
         if (professor_ != null) {
-            try {
-                professorService.delete(professor_);
-                modelAndView.addObject("message", "Professor successfully deleted");
-            } catch (Exception e) {
-                log.error("Could not delete professor " +  professor.getFirstName() + " " + professor.getLastName(), e);
-                modelAndView.addObject("error", "Error deleting professor");
+
+            if(professor_.getCourses() != null && professor_.getCourses().size() > 0) {
+                log.error("Could not delete professor " + professor.getFirstName() + " " + professor.getLastName() + " professor is registered on course(s)");
+                modelAndView.addObject("error", "Professor cannot be deleted because this professor is linked to at least one course");
+            } else {
+                try {
+                    professorService.delete(professor_);
+                    modelAndView.addObject("message", "Professor successfully deleted");
+                } catch (Exception e) {
+                    log.error("Could not delete professor " + professor.getFirstName() + " " + professor.getLastName(), e);
+                    modelAndView.addObject("error", "Error deleting professor");
+                }
             }
         } else
             modelAndView.addObject("error", "Professor does not exist");
+
+
+        return professor(modelAndView);
+    }
+
+    @PostMapping("/professor/reset")
+    @ResponseBody
+    public ModelAndView resetPassword(@ModelAttribute Professor professor) {
+
+        ModelAndView modelAndView = new ModelAndView("professor");
+        Professor professor_ = null;
+        try {
+
+            professor_ = professorService.findById(professor.getId());
+
+            if (professor_ == null) {
+                log.error("Could not reset professor's password. Invalid Professor Id"
+                        + professor.getId());
+                modelAndView.addObject("error", "Error resetting professor's password - Invalid Professor ID");
+            } else {
+                String password = RandomStringUtils.random(10, true, true);
+                String passwordEncrypted = passwordEncoder.encode(password);
+                professor_.getUser().setPassword(passwordEncrypted);
+                userService.update(professor_.getUser());
+
+                Map<String, Object> params = new HashMap<>();
+                params.put("name", professor_.getFirstName() + " " + professor_.getLastName());
+                params.put("username", professor_.getUser().getUserName());
+                params.put("password", password);
+                params.put("url", url);
+                params.put("type", "professor");
+
+                mailService.send(mailFrom, professor_.getUser().getEmail(), "MCIT professor's password reset", "password_reset.html", params);
+
+                modelAndView.addObject("message", "Password successfully reset");
+            }
+        } catch (Exception e) {
+            log.error("Could not reset professor's password " + professor.getId(), e);
+            modelAndView.addObject("error", "Error resetting professor's password");
+        }
 
 
         return professor(modelAndView);

@@ -3,6 +3,7 @@ package com.mcit.AdmissionSystem.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name="as_professor")
@@ -24,10 +25,12 @@ public class Professor implements Serializable {
     @NotNull
     private String lastName;
 
-    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    @JoinColumn(unique = true)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @NotNull
     private User user;
+
+    @OneToMany(mappedBy = "professor")
+    private List<Course> courses;
 
     public Long getId() {
         return id;
@@ -63,5 +66,13 @@ public class Professor implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
     }
 }

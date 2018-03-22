@@ -13,7 +13,16 @@ public class UserService {
 
     public User findByUserName(String userName) {
 
-        return userRepository.findByUserName(userName);
+        return userRepository.findOneWithRolesByUserName(userName);
+    }
+
+    public User findById(Long id) {
+
+        return userRepository.findOneWithRolesById(id);
+    }
+
+    public void update(User user) {
+        userRepository.save(user);
     }
 
     public void delete(User user) {

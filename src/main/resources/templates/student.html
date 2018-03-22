@@ -32,6 +32,12 @@
                 var id = button.data('student-id');
                 $('#delete-student-id').val(id);
             });
+
+            $('#reset-student-password-modal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var id = button.data('student-id');
+                $('#reset-student-id').val(id);
+            });
         });
 
     </script>
@@ -41,6 +47,7 @@
 <div th:replace="fragments/header :: header"/>
 <div th:replace="fragments/new-student :: student-modal"/>
 <div th:replace="fragments/delete-student :: delete-student-modal"/>
+<div th:replace="fragments/reset-student-password :: reset-student-password-modal"/>
 
 <div class="container">
 
@@ -80,7 +87,9 @@
             <th scope="col">Last Name</th>
             <th scope="col">Username</th>
             <th scope="col">E-Mail</th>
-            <th scope="col">Actions</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
             </thead>
             <tbody>
             <tr scope="row" th:each="student : ${students}">
@@ -88,8 +97,8 @@
                 <td class="col-md-2" th:text="${student.firstName}"></td>
                 <td class="col-md-2" th:text="${student.lastName}"></td>
                 <td class="col-md-2" th:text="${student.user.userName}"></td>
-                <td class="col-md-3" th:text="${student.user.email}"></td>
-                <td class="col-md-2">
+                <td class="col-md-2" th:text="${student.user.email}"></td>
+                <td class="col-md-1">
                     <button type="button" class="btn btn-primary" data-toggle="modal"
                             th:attr="data-student-id=${student.id},
                                 data-student-first-name=${student.firstName},
@@ -99,8 +108,14 @@
                                 data-form-action=@{/student/edit}"
                             data-modal-type="Edit"
                             data-target="#student-modal">Edit</button>
+                </td>
+                <td class="col-md-1">
                     <button type="button" class="btn btn-danger" data-toggle="modal"
                             th:attr="data-student-id=${student.id}" data-target="#delete-student-modal">Delete</button>
+                </td>
+                <td class="col-md-1">
+                    <button type="button" class="btn btn-info" data-toggle="modal"
+                            th:attr="data-student-id=${student.id}" data-target="#reset-student-password-modal">Reset Password</button>
                 </td>
             </tr>
 

@@ -13,17 +13,19 @@ Done (2018-02-11):
   - Course CRUD
   - Professor CRUD
   - Student CRUD
+  
+Done (2018-03-22):  
+  - course management
+  - professor dashboard
+  - student dashboatd
+  - course report on PDF
+  - reset user password
+  - set mark on student's course 
 
 Todos:
-  - Link Student, Professor to Course
-  - Add marks to student / course 
-  - Allow admins to manage users
+  
   - Add remember me
   - Add forgot password
-  - Allow students to chose courses
-  - Allow professors to evaluate students (add marks)
-  - Show marks on students page
   - Comment code
   - Add test cases
-  - Add reports to admin
-  - Add liquibase to the project
+  

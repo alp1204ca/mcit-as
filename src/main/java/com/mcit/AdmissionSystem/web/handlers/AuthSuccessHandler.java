@@ -24,11 +24,11 @@ public class AuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessHa
                     log.info("User has role ROLE_ADMIN - redirecting to: /admin");
                     this.getRedirectStrategy().sendRedirect(request, response, "/admin");
                 } else if (a.getAuthority().compareTo("ROLE_PROFESSOR") == 0) {
-                    log.info("User has role ROLE_PROFESSOR - redirecting to: /professor");
-                    this.getRedirectStrategy().sendRedirect(request, response, "/professor");
+                    log.info("User has role ROLE_PROFESSOR - redirecting to: /professor/dashboard");
+                    this.getRedirectStrategy().sendRedirect(request, response, "/professor/dashboard");
                 } else if (a.getAuthority().compareTo("ROLE_STUDENT") == 0) {
-                    log.info("User has role ROLE_STUDENT - redirecting to: /student");
-                    this.getRedirectStrategy().sendRedirect(request, response, "/student");
+                    log.info("User has role ROLE_STUDENT - redirecting to: /student/dashboard");
+                    this.getRedirectStrategy().sendRedirect(request, response, "/student/dashboard");
                 }
             } catch (Exception e) {
                 log.error("Error checking user authority." + e);

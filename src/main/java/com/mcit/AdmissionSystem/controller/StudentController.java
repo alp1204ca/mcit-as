@@ -1,8 +1,6 @@
 package com.mcit.AdmissionSystem.controller;
 
-import com.mcit.AdmissionSystem.model.Role;
-import com.mcit.AdmissionSystem.model.Student;
-import com.mcit.AdmissionSystem.model.User;
+import com.mcit.AdmissionSystem.model.*;
 import com.mcit.AdmissionSystem.service.MailService;
 import com.mcit.AdmissionSystem.service.RoleService;
 import com.mcit.AdmissionSystem.service.StudentService;
@@ -17,12 +15,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.security.Principal;
 import java.util.*;
 
 @Controller
 public class StudentController {
 
-    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
+    private static final Logger log = LoggerFactory.getLogger(StudentController.class);
 
     @Autowired
     private StudentService studentService;
@@ -60,6 +59,26 @@ public class StudentController {
         } catch (Exception e) {
             log.error("Error retrieving students",e);
             modelAndView.addObject("error", "Error retrieving students");
+        }
+
+        return modelAndView;
+    }
+
+    @GetMapping("/student/dashboard")
+    @ResponseBody
+    public ModelAndView studentDashboard(ModelAndView modelAndView, Principal principal) {
+        log.info("/student/dashboard called");
+
+        modelAndView = new ModelAndView("student-dashboard");
+
+        try {
+
+            Student student = studentService.findByUserName(principal.getName());
+
+            modelAndView.addObject("studentCourses", student.getStudentCourses());
+        } catch (Exception e) {
+            log.error("Error retrieving student's courses",e);
+            modelAndView.addObject("error", "Error retrieving student's courses");
         }
 
         return modelAndView;
@@ -140,15 +159,63 @@ public class StudentController {
         Student student_ = studentService.findOneWithUserAndRoles(student.getId());
 
         if (student_ != null) {
-            try {
-                studentService.delete(student_);
-                modelAndView.addObject("message", "Student successfully deleted");
-            } catch (Exception e) {
-                log.error("Could not delete student " +  student.getFirstName() + " " + student.getLastName(), e);
-                modelAndView.addObject("error", "Error adding student");
+
+            if (student_.getStudentCourses() != null && student_.getStudentCourses().size() > 0) {
+                log.error("Could not delete student " +  student.getFirstName() + " " + student.getLastName() + " student is registered on course(s)");
+                modelAndView.addObject("error", "Student cannot be deleted because this student is registered on at least one course");
+            } else {
+
+                try {
+                    studentService.delete(student_);
+                    modelAndView.addObject("message", "Student successfully deleted");
+                } catch (Exception e) {
+                    log.error("Could not delete student " + student.getFirstName() + " " + student.getLastName(), e);
+                    modelAndView.addObject("error", "Error adding student");
+                }
             }
         } else
             modelAndView.addObject("error", "Student does not exist");
+
+        return student(modelAndView);
+    }
+
+    @PostMapping("/student/reset")
+    @ResponseBody
+    public ModelAndView resetPassword(@ModelAttribute Student student) {
+
+        ModelAndView modelAndView = new ModelAndView("student");
+        Student student_ = null;
+
+        try {
+            student_ = studentService.findById(student.getId());
+
+            if (student_ == null) {
+                log.error("Could not reset student's password " + student.getFirstName() + " "
+                        + student.getLastName() + ". Student not found: "
+                        + student.getUser().getUserName());
+                modelAndView.addObject("error", "Error resetting student's password - Invalid Student id");
+            } else {
+                String password = RandomStringUtils.random(10, true, true);
+                String passwordEncrypted = passwordEncoder.encode(password);
+                student_.getUser().setPassword(passwordEncrypted);
+                userService.update(student_.getUser());
+
+                Map<String, Object> params = new HashMap<>();
+                params.put("name", student_.getFirstName() + " " + student_.getLastName());
+                params.put("username", student_.getUser().getUserName());
+                params.put("password", password);
+                params.put("url", url);
+                params.put("type", "student");
+
+                mailService.send(mailFrom, student_.getUser().getEmail(), "MCIT student's password reset", "password_reset.html", params);
+
+                modelAndView.addObject("message", "Password successfully reset");
+            }
+        } catch (Exception e) {
+            log.error("Could not reset student's password " + student.getId(), e);
+            modelAndView.addObject("error", "Error resetting student's password");
+        }
+
 
         return student(modelAndView);
     }

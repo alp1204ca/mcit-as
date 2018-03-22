@@ -4,6 +4,7 @@ package com.mcit.AdmissionSystem.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name="as_student")
@@ -29,6 +30,9 @@ public class Student implements Serializable {
     @JoinColumn(unique = true)
     @NotNull
     private User user;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "csKey.student", cascade = CascadeType.ALL)
+    private List<CS> studentCourses;
 
     public Long getId() {
         return id;
@@ -60,5 +64,13 @@ public class Student implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<CS> getStudentCourses() {
+        return studentCourses;
+    }
+
+    public void setStudentCourses(List<CS> studentCourses) {
+        this.studentCourses = studentCourses;
     }
 }

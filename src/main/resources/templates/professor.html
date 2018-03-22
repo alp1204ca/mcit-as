@@ -25,6 +25,10 @@
                 $('#professor-email').val(email);
                 $('#span-title').text(title);
                 $('#form-professor').attr('action',action);
+
+                if( title.indexOf('Edit') != -1) {
+                    $('#professor-username').attr('readonly', 'readonly');
+                }
             });
 
             $('#delete-professor-modal').on('show.bs.modal', function (event) {
@@ -32,6 +36,14 @@
                 var id = button.data('professor-id');
                 $('#delete-professor-id').val(id);
             });
+
+            $('#reset-professor-password-modal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var id = button.data('professor-id');
+                $('#reset-professor-id').val(id);
+            });
+
+
         });
 
     </script>
@@ -41,6 +53,7 @@
 <div th:replace="fragments/header :: header"/>
 <div th:replace="fragments/new-professor :: professor-modal"/>
 <div th:replace="fragments/delete-professor :: delete-professor-modal"/>
+<div th:replace="fragments/reset-professor-password :: reset-professor-password-modal"/>
 
 <div class="container">
 
@@ -80,7 +93,9 @@
             <th scope="col">Last Name</th>
             <th scope="col">Username</th>
             <th scope="col">E-Mail</th>
-            <th scope="col">Actions</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
             </thead>
             <tbody>
             <tr scope="row" th:each="professor : ${professors}">
@@ -88,8 +103,8 @@
                 <td class="col-md-2" th:text="${professor.firstName}"></td>
                 <td class="col-md-2" th:text="${professor.lastName}"></td>
                 <td class="col-md-2" th:text="${professor.user.userName}"></td>
-                <td class="col-md-3" th:text="${professor.user.email}"></td>
-                <td class="col-md-2">
+                <td class="col-md-2" th:text="${professor.user.email}"></td>
+                <td class="col-md-1">
                     <button type="button" class="btn btn-primary" data-toggle="modal"
                             th:attr="data-professor-id=${professor.id},
                                 data-professor-first-name=${professor.firstName},
@@ -99,8 +114,14 @@
                                 data-form-action=@{/professor/edit}"
                             data-modal-type="Edit"
                             data-target="#professor-modal">Edit</button>
+                </td>
+                <td class="col-md-1">
                     <button type="button" class="btn btn-danger" data-toggle="modal"
                             th:attr="data-professor-id=${professor.id}" data-target="#delete-professor-modal">Delete</button>
+                </td>
+                <td class="col-md-1">
+                    <button type="button" class="btn btn-info" data-toggle="modal"
+                            th:attr="data-professor-id=${professor.id}" data-target="#reset-professor-password-modal">Reset Password</button>
                 </td>
             </tr>
 
