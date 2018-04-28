@@ -138,7 +138,9 @@ public class StudentController {
 
         if (student_ != null) {
             try {
-                studentService.update(student);
+                student_.setFirstName(student.getFirstName());
+                student_.setLastName(student.getLastName());
+                studentService.update(student_);
                 modelAndView.addObject("message", "Student successfully updated");
             } catch (Exception e) {
                 log.error("Could not update student " +  student.getFirstName() + " " + student.getLastName(), e);
